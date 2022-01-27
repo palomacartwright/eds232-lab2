@@ -23,6 +23,7 @@ librarian::shelf(
   tibble, 
   tidyverse,
   vegan,
+  vegan3d, 
   scales
 )
 
@@ -31,15 +32,13 @@ set.seed(42)
 
 # 1. Clustering
 
-This lab was set-up using the `iris` dataset but I will switch the dataset and use `palmerpenguins` instead but with the same applications.  
+This lab was set-up using the `iris` dataset but I will switch the dataset and use `palmerpenguins` instead but with the same applications.
 
-## 1.1 K-Means Clustering 
+## 1.1 K-Means Clustering
 
-k-means clustering specifies the number of clusters needed. The algorithm randomly assigns each observation to a cluster and finds the centroid of each cluster. Then the algorithm: 
-- Reassigns data points to the cluster whose centriod is closest
-- Calculates the new centriod of each cluster. 
+k-means clustering specifies the number of clusters needed. The algorithm randomly assigns each observation to a cluster and finds the centroid of each cluster. Then the algorithm: - Reassigns data points to the cluster whose centriod is closest - Calculates the new centriod of each cluster.
 
-### 1.1.1 Load and plot the `palmerpenguins` dataset 
+### 1.1.1 Load and plot the `palmerpenguins` dataset
 
 ```{r}
 data(penguins) 
@@ -53,7 +52,7 @@ penguins <- penguins %>%
   drop_na()
 ```
 
-In using `palmerpenguins` instead of `iris`, I will be using `bill_length_mm` instead of `Petal.Length` and `bill_depth_mm` instead of `Petal.Width`. 
+In using `palmerpenguins` instead of `iris`, I will be using `bill_length_mm` instead of `Petal.Length` and `bill_depth_mm` instead of `Petal.Width`.
 
 ```{r}
 # plot bill length vs depth, ignoring species 
@@ -91,7 +90,6 @@ penguins_k <- kmeans(
 penguins_k
 ```
 
-
 ```{r}
 # compare clusters with species to find out which were not used to cluster 
 
@@ -101,8 +99,7 @@ table(penguins_k$cluster, penguins$species)
 
 ### **Question**
 
-How many observations could be considered "misclassified" if expecting petal length and width to differentiate between species? 
-
+How many observations could be considered "misclassified" if expecting petal length and width to differentiate between species?
 
 ```{r}
 # extract cluster assignment per observation 
@@ -116,7 +113,7 @@ ggplot(penguins, aes(x = bill_length_mm, bill_depth_mm, color = Cluster))+
 
 ### 1.1.3 Plot Voronoi diagram of clustered `penguins`
 
-#### Bounding Box 
+#### Bounding Box
 
 ```{r}
 # define the bounding box for geom_voronoi()
@@ -132,7 +129,7 @@ box <- tribble(
 
 ```
 
-#### Voronoi for k = 3 
+#### Voronoi for k = 3
 
 ```{r}
 
@@ -206,7 +203,7 @@ ggplot(penguins, aes(bill_length_mm, bill_depth_mm, color = Cluster)) +
 
 ```
 
-#### Voronoi for k = 8 
+#### Voronoi for k = 8
 
 ```{r}
 
@@ -243,10 +240,9 @@ ggplot(penguins, aes(bill_length_mm, bill_depth_mm, color = Cluster)) +
 
 ```
 
+## 1.2 Hierarchical Clustering
 
-## 1.2 Hierarchical Clustering 
-
-### 1.2.1 Load the `dune` dataset 
+### 1.2.1 Load the `dune` dataset
 
 ```{r}
 #load the dune dataset from the vegan package 
@@ -258,8 +254,7 @@ if(interactive())
 
 ### **Question**
 
-What are the rows and columns composed of in the dune data frame?
-The rows in the `dune` data frame are sites and the columns are individual species. 
+What are the rows and columns composed of in the dune data frame? The rows in the `dune` data frame are sites and the columns are individual species.
 
 ### 1.2.2 Calculate Ecological Distances on `sites`
 
@@ -292,21 +287,20 @@ $$
 B_{ij} = 1 - \frac{2C_{ij}}{S_i + S_j}
 $$
 
-- $B_{ij}$: Bray-Curtis dissimilarity value between sites $i$ and $j$. \
-1 = completely dissimilar (no shared species); 0 = identical.
+-   $B_{ij}$: Bray-Curtis dissimilarity value between sites $i$ and $j$.\
+    1 = completely dissimilar (no shared species); 0 = identical.
 
-- $C_{ij}$: sum of the lesser counts $C$ for shared species common to both sites $i$ and $j$
+-   $C_{ij}$: sum of the lesser counts $C$ for shared species common to both sites $i$ and $j$
 
-- $S_{i OR j}$: sum of all species counts $S$ for the given site $i$ or $j$
+-   $S_{i OR j}$: sum of all species counts $S$ for the given site $i$ or $j$
 
-So to calculate Bray-Curtis for the example `sites`: 
+So to calculate Bray-Curtis for the example `sites`:
 
-- $B_{AB} = 1 - \frac{2 * (1 + 1)}{2 + 10} = 1 - 4/12 = 1 - 1/3 = 0.667$
+-   $B_{AB} = 1 - \frac{2 * (1 + 1)}{2 + 10} = 1 - 4/12 = 1 - 1/3 = 0.667$
 
-- $B_{AC} = 1 - \frac{2 * 0}{2 + 1} = 1$
+-   $B_{AC} = 1 - \frac{2 * 0}{2 + 1} = 1$
 
-- $B_{BC} = 1 - \frac{2 * 0}{10 + 1} = 1$
-
+-   $B_{BC} = 1 - \frac{2 * 0}{10 + 1} = 1$
 
 ### 1.2.4 Agglomerative hierarchical clustering on `dune`
 
@@ -361,7 +355,7 @@ hc4$dc
 
 ```
 
-### 1.2.6 Determining optimal clusters 
+### 1.2.6 Determining optimal clusters
 
 ```{r}
 p1 <- fviz_nbclust(dune, FUN = hcut, method = "wss", k.max = 10) +
@@ -377,8 +371,7 @@ p3 <- fviz_nbclust(dune, FUN = hcut, method = "gap_stat", k.max = 10) +
 gridExtra::grid.arrange(p1, p2, p3, nrow = 1)
 ```
 
-
-### 1.2.7 Working with dendrograms 
+### 1.2.7 Working with dendrograms
 
 ```{r}
 # construct dendrogram for the Ames housing example 
@@ -414,7 +407,19 @@ fviz_dend(
 
 ```
 
-# 2. Ordination 
+# 2. Ordination
+
+In this lab, you will play with unsupervised classification techniques while working with ecological community datasets.
+
+-   Ordination orders sites near each other based on similarity. It is a multivariate analysis technique used to effectively collapse dependent axes into fewer dimensions, i.e. dimensionality reduction.
+
+    -   Principal Components Analyses (PCA) is the most common and oldest technique that assumes linear relationships between axes. You will follow a non-ecological example from [Chapter 17 Principal Components Analysis](https://bradleyboehmke.github.io/HOML/pca.html) \| Hands-On Machine Learning with R to learn about this commonly used technique.
+
+    -   Non-metric MultiDimensional Scaling (NMDS) allows for non-linear relationships. This ordination technique is implemented in the R package `vegan`. You'll use an ecological dataset, species and environment from lichen pastures that reindeer forage upon, with excerpts from the vegantutor vignette (source) to apply these techniques:
+
+        -   Unconstrained ordination on species using NMDS;
+        -   Overlay with environmental gradients; and
+        -   Constrained ordination on species and environmnent using another ordination technique, canonical correspondence analysis (CCA).
 
 ## Principal Components Analysis (PCA)
 
@@ -427,7 +432,7 @@ dim(my_basket)
 my_basket
 ```
 
-## Performing PCA in R 
+## Performing PCA in R
 
 ```{r}
 h2o.no_progress()  # turn off progress bars for brevity
@@ -461,7 +466,7 @@ my_pca@model$eigenvectors %>%
 
 ```
 
-### Eigenvalue Criterion 
+### Eigenvalue Criterion
 
 ```{r}
 # Compute eigenvalues
@@ -475,8 +480,109 @@ sum(eigen)
 # Find PCs where the sum of eignvalues is greater than or equal to 1 
 which(eigen >= 1)
 
+# Extract PVE nad CVE 
+
+ve <- data.frame(
+  PC = my_pca@model$importance %>% seq_along(),
+  PVE = my_pca@model$importance %>% .[2,] %>% unlist(),
+  CVE = my_pca@model$importance %>% .[3,] %>% unlist()
+)
+
+# Plot PVE and CVE 
+
+ve %>% 
+  tidyr::gather(metric, variance_explained, -PC) %>% 
+  ggplot(aes(PC, variance_explained)) +
+  geom_point() +
+  facet_wrap(~ metric, ncol = 1, scales = "free")
+
 ```
 
+```{r}
+# How many PCs required to explain at least 75% of total variability
+min(which(ve$CVE >= 0.75))
+
+# Screen plot criterion 
+data.frame(
+  PC = my_pca@model$importance %>% seq_along,
+  PVE = my_pca@model$importance %>% .[2,] %>% unlist()) %>% 
+  ggplot(aes(PC, PVE, group = 1, label = PC)) +
+  geom_point()+
+  geom_line() +
+  geom_text(nudge_y = -.002)
+
+
+```
+
+## Non-metric MultiDimernsional Scaling (NMDS)
+
+### Unconstrained Ordination on Species
+
+```{r}
+# vegetation and environment in lichen pastures from Vare et al (1995) 
+
+data("varespec") # species
+data("varechem") # chemistry 
+
+varespec %>% tibble()
+
+vare.dis <- vegdist(varespec)
+vare.mds0 <- monoMDS(vare.dis)
+
+stressplot(vare.mds0)
+
+ordiplot(vare.mds0, type = "t")
+
+
+vare.mds <- metaMDS(varespec, trace = F)
+vare.mds
+
+
+plot(vare.mds, type = "t")
+```
+
+### Overlay with Environment
+
+```{r}
+
+ef <- envfit(vare.mds, varechem, permu = 999)
+ef
+
+plot(vare.mds, display = "sites")
+plot(ef, p.max = 0.05)
+
+
+ef <- envfit(vare.mds ~ Al + Ca, data = varechem)
+plot(vare.mds, display = "sites")
+plot(ef)
+
+tmp <- with(varechem, ordisurf(vare.mds, Al, add = TRUE))
+ordisurf(vare.mds ~ Ca, data=varechem, add = TRUE, col = "green4")
 
 
 
+
+```
+
+### Constrained Ordination on Species and Environment
+
+```{r}
+
+# this uses another technique cca, or canonical correspondence analysis.
+# ordinate on species constrained by three soil elements
+vare.cca <- cca(varespec ~ Al + P + K, varechem)
+vare.cca
+
+# plot ordination
+plot(vare.cca)
+
+
+# plot 3 dimensions
+ordiplot3d(vare.cca, type = "h")
+
+
+if (interactive()){
+  ordirgl(vare.cca)
+}
+
+```
