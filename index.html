@@ -11,7 +11,7 @@
 
 <meta name="author" content="Paloma Cartwright" />
 
-<meta name="date" content="2022-01-27" />
+<meta name="date" content="2022-01-30" />
 
 <title>EDS 232: Lab 2 - Clustering</title>
 
@@ -263,7 +263,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">EDS 232: Lab 2 - Clustering</h1>
 <h4 class="author">Paloma Cartwright</h4>
-<h4 class="date">2022-01-27</h4>
+<h4 class="date">2022-01-30</h4>
 
 </div>
 
@@ -352,7 +352,8 @@ table(penguins_k$cluster, penguins$species)</code></pre>
 </div>
 <div id="question" class="section level3">
 <h3><strong>Question</strong></h3>
-<p>How many observations could be considered “misclassified” if expecting petal length and width to differentiate between species?</p>
+<p>How many observations could be considered “misclassified” if expecting bill length and depth to differentiate between species?</p>
+<p>There were 79 observations that could be considered misclassified if expecting bill length and depth to differentiate between species.</p>
 <pre class="r"><code># extract cluster assignment per observation 
 
 Cluster = factor(penguins_k$cluster)
@@ -696,14 +697,14 @@ h2o.init(max_mem_size = &quot;5g&quot;)  # connect to H2O instance</code></pre>
 <pre><code>##  Connection successful!
 ## 
 ## R is connected to the H2O cluster: 
-##     H2O cluster uptime:         12 hours 15 minutes 
+##     H2O cluster uptime:         3 days 10 hours 
 ##     H2O cluster timezone:       Etc/UTC 
 ##     H2O data parsing timezone:  UTC 
 ##     H2O cluster version:        3.36.0.2 
-##     H2O cluster version age:    1 day  
+##     H2O cluster version age:    4 days  
 ##     H2O cluster name:           H2O_started_from_R_palomacartwright_qea893 
 ##     H2O cluster total nodes:    1 
-##     H2O cluster total memory:   5.00 GB 
+##     H2O cluster total memory:   4.99 GB 
 ##     H2O cluster total cores:    64 
 ##     H2O cluster allowed cores:  64 
 ##     H2O cluster healthy:        TRUE 
@@ -729,7 +730,7 @@ my_pca</code></pre>
 ## ==============
 ## 
 ## H2ODimReductionModel: pca
-## Model ID:  PCA_model_R_1643260067821_10 
+## Model ID:  PCA_model_R_1643260067821_38 
 ## Importance of components: 
 ##                             pc1      pc2      pc3      pc4      pc5      pc6
 ## Standard deviation     1.513919 1.473768 1.459114 1.440635 1.435279 1.411544

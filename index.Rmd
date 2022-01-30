@@ -99,7 +99,11 @@ table(penguins_k$cluster, penguins$species)
 
 ### **Question**
 
-How many observations could be considered "misclassified" if expecting petal length and width to differentiate between species?
+How many observations could be considered "misclassified" if expecting bill length and depth to differentiate between species?
+
+There were 79 observations that could be considered misclassified if expecting bill length and depth to differentiate between species.  
+
+
 
 ```{r}
 # extract cluster assignment per observation 
@@ -254,7 +258,8 @@ if(interactive())
 
 ### **Question**
 
-What are the rows and columns composed of in the dune data frame? The rows in the `dune` data frame are sites and the columns are individual species.
+What are the rows and columns composed of in the dune data frame? 
+The rows in the `dune` data frame are sites and the columns are individual species.
 
 ### 1.2.2 Calculate Ecological Distances on `sites`
 
