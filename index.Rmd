@@ -24,7 +24,8 @@ librarian::shelf(
   tidyverse,
   vegan,
   vegan3d, 
-  scales
+  scales, 
+  skimr
 )
 
 set.seed(42)
@@ -36,9 +37,11 @@ This lab was set-up using the `iris` dataset but I will switch the dataset and u
 
 ## 1.1 K-Means Clustering
 
-k-means clustering specifies the number of clusters needed. The algorithm randomly assigns each observation to a cluster and finds the centroid of each cluster. Then the algorithm: - Reassigns data points to the cluster whose centriod is closest - Calculates the new centriod of each cluster.
+k-means clustering specifies the number of clusters needed. The algorithm randomly assigns each observation to a cluster and finds the centroid of each cluster. Then the algorithm: 
+- Reassigns data points to the cluster whose centriod is closest 
+- Calculates the new centriod of each cluster.
 
-### 1.1.1 Load and plot the `palmerpenguins` dataset
+### 1.1.1 Load and plot the `penguins` dataset
 
 ```{r}
 data(penguins) 
@@ -50,6 +53,8 @@ datatable(penguins)
 
 penguins <- penguins %>% 
   drop_na()
+
+skim(penguins)
 ```
 
 In using `palmerpenguins` instead of `iris`, I will be using `bill_length_mm` instead of `Petal.Length` and `bill_depth_mm` instead of `Petal.Width`.
@@ -104,7 +109,6 @@ How many observations could be considered "misclassified" if expecting bill leng
 There were 79 observations that could be considered misclassified if expecting bill length and depth to differentiate between species.  
 
 
-
 ```{r}
 # extract cluster assignment per observation 
 
@@ -121,14 +125,16 @@ ggplot(penguins, aes(x = bill_length_mm, bill_depth_mm, color = Cluster))+
 
 ```{r}
 # define the bounding box for geom_voronoi()
-
+# define bounding box for geom_voronoi()
+xr <- extendrange(range(penguins$bill_length_mm), f=0.1)
+yr <- extendrange(range(penguins$bill_depth_mm), f=0.1)
 box <- tribble(
-  ~bill_length_mm, ~bill_depth_mm, ~group, 
-  30, 12, 1, 
-  30, 23, 1, 
-  60, 23, 1,
-  60, 12, 1, 
-  30, 12, 1) %>% 
+  ~bill_length_mm, ~bill_depth_mm, ~group,
+  xr[1], yr[1], 1,
+  xr[1], yr[2], 1,
+  xr[2], yr[2], 1,
+  xr[2], yr[1], 1,
+  xr[1], yr[1], 1) %>% 
   data.frame()
 
 ```
