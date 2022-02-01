@@ -59,11 +59,15 @@ skim(penguins)
 
 In using `palmerpenguins` instead of `iris`, I will be using `bill_length_mm` instead of `Petal.Length` and `bill_depth_mm` instead of `Petal.Width`.
 
+#### 1 2a.Cluster.geom_point()
+
 ```{r}
 # plot bill length vs depth, ignoring species 
 ggplot(penguins, aes(bill_length_mm, bill_depth_mm)) +
   geom_point()
 ```
+
+#### 2 2a.Cluster.geom_point()
 
 ```{r}
 #plot bill length vs depth, color by species 
@@ -82,6 +86,8 @@ ggplot(penguins, aes(x = bill_length_mm, y = bill_depth_mm, color = species)) +
 ```
 
 ### 1.1.2 Cluster `penguins` using `kmeans()`
+
+#### 3 2a.Cluster.kmeans()
 
 ```{r}
 
@@ -119,6 +125,11 @@ ggplot(penguins, aes(x = bill_length_mm, bill_depth_mm, color = Cluster))+
   legend_pos
 ```
 
+#### 4 2a.Cluster.kmeans() **Question**
+
+When comparing the species plot with the `kmeans()` cluster plot, they are mostly similar for bill lengths of up to 41 mm. This means that group two in my cluster plot is very similar to the grouping of Adelie in the species plot. These two graphs differ groups 1 and 3 and the Chinstrap and Gentoo species. The kmeans cluster struggled more with these two groupings than with the Adelie one. 
+
+
 ### 1.1.3 Plot Voronoi diagram of clustered `penguins`
 
 #### Bounding Box
@@ -140,6 +151,8 @@ box <- tribble(
 ```
 
 #### Voronoi for k = 3
+
+#### 5 2a.Cluster.geom_voronoi()
 
 ```{r}
 
@@ -290,6 +303,10 @@ sites_bray
 
 ```
 
+#### 6 2a.Cluster.vegdist() **Question**
+
+The euclidean difference is calculated by measuring the distance between each of the sites. The Bray Curtis distance however is calculated from the differences in the abundance of each species, with a distance of 1 meaning the species are completely different.  
+
 ### 1.2.3 Bray-Curtis Dissimilarity on `sites`
 
 Let's take a closer look at the [Bray-Curtis Dissimilarity](https://en.wikipedia.org/wiki/Bray%E2%80%93Curtis_dissimilarity) distance:
@@ -315,6 +332,10 @@ So to calculate Bray-Curtis for the example `sites`:
 
 ### 1.2.4 Agglomerative hierarchical clustering on `dune`
 
+#### 7 2a.Cluster.as.matrix() 
+
+#### 8 2a.Cluster.hclust()   
+
 ```{r}
 d <- vegdist(dune, method = "bray")
 dim(d)
@@ -326,12 +347,31 @@ hc1 <- hclust(d, method = "complete")
 
 plot(hc1, cex = 0.6, hang = -1)
 
+```
+
+#### 9 2a.Cluster.hclust() **Question**
+
+`vegdist()` comes before `hclust()` because it created the dissimilarity matrix to be plotted in the hierarchical clustering function.
+
+#### 10 2a.Cluster.agnes()
+
+```{r}
+
 # Hierarchical clustering using agnes 
 hc2 <- agnes(dune, method = "complete")
 hc2$ac
 
 plot(hc2, which.plot = 2)
 
+```
+
+#### 11 2a.Cluster.agnes() **Question**
+
+`hclust()` differs from agnes because it clusters on a set of dissimilarities whereas `agnes()` computes agglomerative hierarchical clustering. 
+
+#### 12 2a.Cluster.ac()
+
+```{r}
 
 # methods to assess
 
@@ -345,6 +385,13 @@ ac <- function(x){
 
 #get agglomerative coefficient for each linkage method 
 purrr::map_dbl(m, ac)
+```
+
+#### 13 2a.Cluster.agnes() **Question**
+
+The best model in terms of the agglomerative coefficient is the ward model.
+
+```{r}
 
 # Compute ward linkage clustering with agnes
 hc3 <- agnes(dune, method = "ward")
@@ -357,6 +404,8 @@ plot(hc3, which.plot = 2)
 
 ### 1.2.5 Divisive hierarchical clustering on `dune`
 
+#### 14 2a.Cluster.diana()
+
 ```{r}
 #compute divisive hierarchical clustering 
 hc4 <- diana(dune)
@@ -366,7 +415,13 @@ hc4$dc
 
 ```
 
+#### 15 2a.Cluster.diana()
+
+`agnes()` is agglomerative clustering but `diana()` does not and instead does divisive hierarchical clustering. 
+
 ### 1.2.6 Determining optimal clusters
+
+#### 16 2a.Cluster.fviz_nbclust()
 
 ```{r}
 p1 <- fviz_nbclust(dune, FUN = hcut, method = "wss", k.max = 10) +
@@ -381,6 +436,10 @@ p3 <- fviz_nbclust(dune, FUN = hcut, method = "gap_stat", k.max = 10) +
 # display plots side by side 
 gridExtra::grid.arrange(p1, p2, p3, nrow = 1)
 ```
+
+#### 17 2a.Cluster.fviz_dend() **Question**
+
+Since A has no dashed line, I compared the other two methods. The Silhouette method gives us an optiimal number of clusters as 4 whereas the Gap Statistic has one less cluster in the optimal number at 3. 
 
 ### 1.2.7 Working with dendrograms
 
@@ -418,6 +477,12 @@ fviz_dend(
 
 ```
 
+
+#### 18 2a.Cluster.fviz_dend() **Question**
+
+In dendrograms, the biggest determinant of relatedness between observations is the height of their shared connection. 
+
+
 # 2. Ordination
 
 In this lab, you will play with unsupervised classification techniques while working with ecological community datasets.
@@ -445,12 +510,16 @@ my_basket
 
 ## Performing PCA in R
 
+#### 19 2b.Community.h2o.prcomp()
+
 ```{r}
 h2o.no_progress()  # turn off progress bars for brevity
 h2o.init(max_mem_size = "5g")  # connect to H2O instance
 
 # convert data to h2o object
 my_basket.h2o <- as.h2o(my_basket)
+
+ncol(my_basket.h2o)
 
 # run PCA
 my_pca <- h2o.prcomp(
@@ -462,11 +531,35 @@ my_pca <- h2o.prcomp(
   max_runtime_secs = 1000)
 my_pca
 
+```
+
+#### 20 2b.Community.h2o.prcomp() **Question**
+
+"GramSVD" is used over the "GLRM" method because the data is mostly numeric and GLRM is better for categorical variables. 
+
+#### 21 2b.Community.h2o.prcomp() **Question**
+
+There were 42 initial principal components chosen which was the number of columns in the input data. 
+
+#### 22 2b.Community.geom_point()
+
+```{r}
+
 my_pca@model$eigenvectors %>% 
   as.data.frame() %>% 
   mutate(feature = row.names(.)) %>%
   ggplot(aes(pc1, reorder(feature, pc1))) +
   geom_point()
+
+```
+
+#### 23 2b.Community.geom_point() **Question**
+
+Adult beverages like alcohol contribute the most to PC1.
+
+#### 24. 2b.Community.geom_text() 
+
+```{r}
 
 my_pca@model$eigenvectors %>% 
   as.data.frame() %>% 
@@ -477,7 +570,14 @@ my_pca@model$eigenvectors %>%
 
 ```
 
+#### 25 2b.Community.geom_text() **Question**
+
+Milk, tea, instant coffee and muesli, breakfast items contribute the most to pc2 and least to pc1. The veggies cluster can also be said to contribute the least to pc1 and most to pc2. 
+
+
 ### Eigenvalue Criterion
+
+#### 26 2b.Community.facet_wrap()
 
 ```{r}
 # Compute eigenvalues
@@ -509,6 +609,13 @@ ve %>%
 
 ```
 
+#### 27 2b.Community.@model$importance 
+
+I would include about 35 principal components to explain 90% of the total variance. 
+
+
+#### 28 2b.Community.geom_line() 
+
 ```{r}
 # How many PCs required to explain at least 75% of total variability
 min(which(ve$CVE >= 0.75))
@@ -522,8 +629,16 @@ data.frame(
   geom_line() +
   geom_text(nudge_y = -.002)
 
-
 ```
+
+#### 29 2b.Community.geom_line() **Question**
+
+There are 6 principal components to include before the elbow. 
+
+#### 30 2b.Community.PCA **Question**
+
+PCA can be affected by outliers and it does not perform well where complex non-linear patterns often exist. 
+
 
 ## Non-metric MultiDimernsional Scaling (NMDS)
 
@@ -539,20 +654,55 @@ varespec %>% tibble()
 
 vare.dis <- vegdist(varespec)
 vare.mds0 <- monoMDS(vare.dis)
+```
 
+#### 31 2b.Community.varespec **Question**
+
+The `varespec` dataframe is 24 x 44. The rows are species and the columns are the estimated cover of the 44 species. 
+
+#### 32 2b.Community.stressplot() 
+
+```{r}
 stressplot(vare.mds0)
+```
+
+#### 33 2b.Community.stressplot() **Question**
+
+The non-metric fit has a R-squared value that is 0.1 higher than the linear fit which means that it is a better method. 
+
+#### 34. 2b.Community.ordiplot()
+
+```{r}
 
 ordiplot(vare.mds0, type = "t")
+```
 
+#### 35 2b.Community.ordiplot() **Question**
 
+For the first component, sites 4, 3, 2, and 5 are almost equally dissimilar with 28. For MDS2, sites 21 and 5 are the most dissimilar  
+
+#### 36 2b.Community.metaMDS()
+
+```{r}
 vare.mds <- metaMDS(varespec, trace = F)
 vare.mds
+```
 
+#### 37 2b.Community.metaMDS()
+
+```{r}
 
 plot(vare.mds, type = "t")
 ```
 
+
+#### 38 2b.Community.metaMDS() **Question**
+
+The basic difference is that `metaMDS()` performs several random starts using the functionality of monoMDS() but stops after meeting certain criteria. `monoMDS()` simply starts with the dissimilarities as input and finds two dimensions and uses random configuration to iterate but with no guaranteer convergence. 
+
 ### Overlay with Environment
+
+#### 39 2b.Community.envfit() 
 
 ```{r}
 
@@ -561,8 +711,16 @@ ef
 
 plot(vare.mds, display = "sites")
 plot(ef, p.max = 0.05)
+```
+
+#### 40 2b.Community.envfit() **Question** 
+
+Aluminum and Iron have the strongest negative relationship with NMDS1 that is based on species composition. 
 
 
+#### 41 2b.Community.rdisurf()
+
+```{r}
 ef <- envfit(vare.mds ~ Al + Ca, data = varechem)
 plot(vare.mds, display = "sites")
 plot(ef)
@@ -570,10 +728,11 @@ plot(ef)
 tmp <- with(varechem, ordisurf(vare.mds, Al, add = TRUE))
 ordisurf(vare.mds ~ Ca, data=varechem, add = TRUE, col = "green4")
 
-
-
-
 ```
+
+#### 42 2b.Community.ordisurf() **Question**
+
+NMDS1 differentiates Calcium the most based on the values on the green contour lines. 
 
 ### Constrained Ordination on Species and Environment
 
@@ -583,6 +742,15 @@ ordisurf(vare.mds ~ Ca, data=varechem, add = TRUE, col = "green4")
 # ordinate on species constrained by three soil elements
 vare.cca <- cca(varespec ~ Al + P + K, varechem)
 vare.cca
+```
+
+#### 43 2b.Community.cca() **Question** 
+
+Constrained ordination explicitly includes two or more different sets of information into an analysis but unconstrained includes any potential effects by factors which were not included in an analysis. 
+
+#### 44 2b.Community.cca()
+
+```{r}
 
 # plot ordination
 plot(vare.cca)
@@ -597,3 +765,6 @@ if (interactive()){
 }
 
 ```
+
+#### 45 2b.Community.cca()
+
