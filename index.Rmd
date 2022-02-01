@@ -766,5 +766,7 @@ if (interactive()){
 
 ```
 
-#### 45 2b.Community.cca()
+#### 45 2b.Community.cca() **Question**
+
+Sites 4 and 28 are most differentiated by CCA1 based on species composition and the environment and the strongest environmental vector is Aluminum. 
 
